@@ -31,7 +31,7 @@ bool getFromIni(const IniFile &iniFile, const char *section, const char *key,
 
 template <typename T>
 bool getFromIni(const IniFile &iniFile, const char *section, const char *key,
-                  T *param, T *defaultVal, const int &size)
+                  T *param, T *defaultVal, const int &size);
 
 bool setToIni(const IniFile &iniFile, const char *section, const char *key,
                 const char *fromValue);

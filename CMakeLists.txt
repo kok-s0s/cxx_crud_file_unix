@@ -15,7 +15,7 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-add_executable(crud main.cpp jsoncpp.cpp)
+add_executable(crud main.cpp json/jsoncpp.cpp)
 
 target_link_libraries(
   crud
