@@ -231,3 +231,24 @@ TEST(iniFile_Test, setArrayToIni) {
   EXPECT_EQ(fileTools.setToIni(ini_test_02, "doubleArr", "dArr", arr_double, 3),
             true);
 }
+
+TEST(jsonFile_Test, readDataFromJsonFile) {
+  JsonFile json_test_01;
+  json_test_01.path =
+      fileTools.get_current_directory() + "/files_test/json_test_01.json";
+
+  EXPECT_EQ(fileTools.readDataFromJsonFile(json_test_01), true);
+}
+
+TEST(jsonFile_Test, getFromJson) {
+  JsonFile json_test_01;
+  json_test_01.path =
+      fileTools.get_current_directory() + "/files_test/json_test_01.json";
+  std::string json_key_01 = "encoding";
+  std::string json_value_01;
+
+  EXPECT_EQ(fileTools.readDataFromJsonFile(json_test_01), true);
+  fileTools.getFromJson(json_test_01, json_key_01, json_value_01, "kkkkk");
+
+  EXPECT_EQ(json_value_01, "UTF-8");
+}

@@ -1,6 +1,8 @@
 #include "SimpleIni.h"
+#include "json/json.h"
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <unistd.h>
 #include <vector>
@@ -12,6 +14,11 @@ struct TxtFile {
 
 struct IniFile {
   std::string path;
+};
+
+struct JsonFile {
+  std::string path;
+  Json::Value data;
 };
 
 class FileTools {
@@ -333,4 +340,38 @@ public:
 
     return true;
   };
+
+  bool readDataFromJsonFile(JsonFile &jsonFile) {
+    std::fstream file;
+
+    file.open(jsonFile.path, std::ios::in);
+
+    if (file.is_open()) {
+      Json::CharReaderBuilder ReaderBuilder;
+      ReaderBuilder["emitUTF8"] = true;
+
+      Json::Value root;
+
+      std::string strerr;
+
+      bool flag = Json::parseFromStream(ReaderBuilder, file, &root, &strerr);
+
+      if (!flag) {
+        std::cout << strerr << std::endl;
+        return false;
+      }
+
+      jsonFile.data = root;
+
+      file.close();
+
+      return true;
+    } else
+      return false;
+  }
+
+  void getFromJson(const JsonFile &jsonFile, const std::string &name,
+                   std::string &param, std::string defaultVal) {
+    param = jsonFile.data.get(name, defaultVal).asString();
+  }
 };
