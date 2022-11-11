@@ -370,8 +370,8 @@ public:
       return false;
   }
 
-  void getFromJson(const JsonFile &jsonFile, const std::string &name,
-                   std::string &param, std::string defaultVal) {
+  void getFromJsonData(const JsonFile &jsonFile, const std::string &name,
+                       std::string &param, std::string defaultVal) {
     param = jsonFile.data.get(name, defaultVal).asString();
   }
 };

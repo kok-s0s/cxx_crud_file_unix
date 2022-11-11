@@ -240,7 +240,7 @@ TEST(jsonFile_Test, readDataFromJsonFile) {
   EXPECT_EQ(fileTools.readDataFromJsonFile(json_test_01), true);
 }
 
-TEST(jsonFile_Test, getFromJson) {
+TEST(jsonFile_Test, getFromJsonData) {
   JsonFile json_test_01;
   json_test_01.path =
       fileTools.get_current_directory() + "/files_test/json_test_01.json";
@@ -248,7 +248,7 @@ TEST(jsonFile_Test, getFromJson) {
   std::string json_value_01;
 
   EXPECT_EQ(fileTools.readDataFromJsonFile(json_test_01), true);
-  fileTools.getFromJson(json_test_01, json_key_01, json_value_01, "kkkkk");
+  fileTools.getFromJsonData(json_test_01, json_key_01, json_value_01, "kkkkk");
 
   EXPECT_EQ(json_value_01, "UTF-8");
 }
