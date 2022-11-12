@@ -372,7 +372,14 @@ public:
 
   void getFromJsonData(const JsonFile &jsonFile, const std::string &key,
                        std::string &param, std::string defaultVal) {
-    param = jsonFile.data.get(key, defaultVal).asString();
+    Json::Value temp = jsonFile.data;
+    std::vector<std::string> keyArr = split(key, ".");
+
+    for (int i = 0; i < keyArr.size() - 1; ++i) {
+      temp = temp[keyArr[i]];
+    }
+
+    param = temp.get(keyArr[keyArr.size() - 1], defaultVal).asString();
   }
 
   template <typename T>
@@ -399,7 +406,14 @@ public:
   void getFromJsonData(const JsonFile &jsonFile, const std::string &key,
                        std::string *param, std::string *defaultVal,
                        const int &size) {
-    const Json::Value thisKeyArrData = jsonFile.data[key];
+    Json::Value temp = jsonFile.data;
+    std::vector<std::string> keyArr = split(key, ".");
+
+    for (int i = 0; i < keyArr.size() - 1; ++i) {
+      temp = temp[keyArr[i]];
+    }
+
+    const Json::Value thisKeyArrData = temp[keyArr[keyArr.size() - 1]];
     int index = 0;
 
     for (int i = 0; i < thisKeyArrData.size(); ++i)
@@ -411,20 +425,32 @@ public:
     }
   }
 
-  // template <typename T>
-  // void getFromJsonData(const JsonFile &jsonFile, const std::string &key,
-  //                      T *param, T *defaultVal, const int &size) {
-  //   const char *name = typeid(T).name();
-  //   std::string valueType = name;
+  template <typename T>
+  void getFromJsonData(const JsonFile &jsonFile, const std::string &key,
+                       T *param, T *defaultVal, const int &size) {
+    Json::Value temp = jsonFile.data;
+    std::vector<std::string> keyArr = split(key, ".");
+    const char *name = typeid(T).name();
+    std::string valueType = name;
 
-  //   if (valueType == "i") {
-  //     for (int i = 0; i < size; ++i) {
-  //       param[i] = jsonFile.data.get(key, defaultVal[i]).asInt();
-  //     }
-  //   } else if (valueType == "d") {
-  //     for (int i = 0; i < size; ++i) {
-  //       param[i] = jsonFile.data.get(key, defaultVal[i]).asDouble();
-  //     }
-  //   }
-  // }
+    for (int i = 0; i < keyArr.size() - 1; ++i) {
+      temp = temp[keyArr[i]];
+    }
+
+    const Json::Value thisKeyArrData = temp[keyArr[keyArr.size() - 1]];
+    int index = 0;
+
+    if (valueType == "i") {
+      for (int i = 0; i < thisKeyArrData.size(); ++i)
+        param[index++] = thisKeyArrData[index].asInt();
+    } else if (valueType == "d") {
+      for (int i = 0; i < thisKeyArrData.size(); ++i)
+        param[index++] = thisKeyArrData[index].asDouble();
+    }
+
+    if (index < size) {
+      for (int i = index; i < size; ++i)
+        param[i] = defaultVal[i];
+    }
+  }
 };

@@ -250,6 +250,7 @@ TEST(jsonFile_Test, getFromJsonData) {
   bool json_value_bool;
   int depth_json_value_int;
   bool depth_json_value_bool;
+  std::string depth_json_value_string;
 
   EXPECT_EQ(fileTools.readDataFromJsonFile(json_test_01), true);
   fileTools.getFromJsonData(json_test_01, "encoding", json_value_string,
@@ -261,6 +262,8 @@ TEST(jsonFile_Test, getFromJsonData) {
                             19);
   fileTools.getFromJsonData(json_test_01, "indent.use_space",
                             depth_json_value_bool, false);
+  fileTools.getFromJsonData(json_test_01, "indent.g", depth_json_value_string,
+                            "bbbbb");
 
   EXPECT_EQ(json_value_string, "UTF-8");
   EXPECT_EQ(json_value_int, 22);
@@ -268,9 +271,10 @@ TEST(jsonFile_Test, getFromJsonData) {
   EXPECT_EQ(json_value_bool, false);
   EXPECT_EQ(depth_json_value_int, 3);
   EXPECT_EQ(depth_json_value_bool, true);
+  EXPECT_EQ(depth_json_value_string, "ekoko");
 }
 
-TEST(jsonFile_Test, getArrFromJsonData) {
+TEST(jsonFile_Test, getStringArrFromJsonData) {
   JsonFile json_test_01;
   json_test_01.path =
       fileTools.get_current_directory() + "/files_test/json_test_01.json";
@@ -281,6 +285,42 @@ TEST(jsonFile_Test, getArrFromJsonData) {
 
   EXPECT_EQ(fileTools.readDataFromJsonFile(json_test_01), true);
   fileTools.getFromJsonData(json_test_01, "plug-ins", json_value,
+                            json_default_value, size);
+
+  for (int i = 0; i < size; ++i) {
+    EXPECT_EQ(json_value[i], json_target_value[i]);
+  }
+}
+
+TEST(jsonFile_Test, getIntArrFromJsonData) {
+  JsonFile json_test_01;
+  json_test_01.path =
+      fileTools.get_current_directory() + "/files_test/json_test_01.json";
+  int json_value[3];
+  int json_target_value[] = {1, 2, 3};
+  int json_default_value[] = {3, 2, 1};
+  int size = 3;
+
+  EXPECT_EQ(fileTools.readDataFromJsonFile(json_test_01), true);
+  fileTools.getFromJsonData(json_test_01, "indent.int_arr", json_value,
+                            json_default_value, size);
+
+  for (int i = 0; i < size; ++i) {
+    EXPECT_EQ(json_value[i], json_target_value[i]);
+  }
+}
+
+TEST(jsonFile_Test, getDoubleArrFromJsonData) {
+  JsonFile json_test_01;
+  json_test_01.path =
+      fileTools.get_current_directory() + "/files_test/json_test_01.json";
+  double json_value[3];
+  double json_target_value[] = {1.11, 2.11, 3.11};
+  double json_default_value[] = {3.11, 2.11, 1.11};
+  int size = 3;
+
+  EXPECT_EQ(fileTools.readDataFromJsonFile(json_test_01), true);
+  fileTools.getFromJsonData(json_test_01, "indent.double_arr", json_value,
                             json_default_value, size);
 
   for (int i = 0; i < size; ++i) {
