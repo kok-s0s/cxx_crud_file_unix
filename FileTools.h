@@ -26,9 +26,8 @@ private:
   std::vector<std::string> split(const std::string &data,
                                  const std::string &separator) {
     std::vector<std::string> result;
-    if (data == "") {
+    if (data == "")
       return result;
-    }
 
     char *thisStr = new char[data.length() + 1];
     strcpy(thisStr, data.c_str());
@@ -61,9 +60,9 @@ public:
     file.open(txtFile.path, std::ios::in);
 
     if (file.is_open()) {
-      while (std::getline(file, ln)) {
+      while (std::getline(file, ln))
         txtFile.data += (ln + "\n");
-      }
+
       file.close();
 
       return true;
@@ -95,9 +94,8 @@ public:
     const char *path = (char *)iniFile.path.c_str();
 
     SI_Error rc = ini.LoadFile(path);
-    if (rc < 0) {
+    if (rc < 0)
       return false;
-    }
 
     param = ini.GetValue(section, key, defaultVal);
 
@@ -113,28 +111,26 @@ public:
     const char *path = (char *)iniFile.path.c_str();
 
     SI_Error rc = ini.LoadFile(path);
-    if (rc < 0) {
+    if (rc < 0)
       return false;
-    }
 
     const char *name = typeid(T).name();
     std::string paramType = name;
     std::string tempParam;
     tempParam = ini.GetValue(section, key, std::to_string(defaultVal).c_str());
 
-    if (paramType == "i") {
+    if (paramType == "i")
       param = std::stoi(tempParam);
-    } else if (paramType == "f") {
+    else if (paramType == "f")
       param = std::stof(tempParam);
-    } else if (paramType == "d") {
+    else if (paramType == "d")
       param = std::stod(tempParam);
-    } else if (paramType == "b") {
+    else if (paramType == "b")
       if (tempParam == "false" || tempParam == "0") {
         param = false;
       } else if (tempParam == "true" || tempParam == "1") {
         param = true;
       }
-    }
 
     return true;
   };
@@ -148,37 +144,36 @@ public:
     const char *path = (char *)iniFile.path.c_str();
 
     SI_Error rc = ini.LoadFile(path);
-    if (rc < 0) {
+    if (rc < 0)
       return false;
-    }
 
     int index = 0;
 
     const char *name = typeid(T).name();
     std::string paramType = name;
-    if (ini.GetValue(section, key) == nullptr) {
+
+    if (ini.GetValue(section, key) == nullptr)
       while (index <= size - 1) {
         param[index] = defaultVal[index];
         index++;
       }
-    } else {
+    else {
       std::string tempParamArrayStr = ini.GetValue(section, key);
       std::vector<std::string> tempParamArray =
           split(tempParamArrayStr, " ,\t\n");
 
-      if (paramType == "i") {
+      if (paramType == "i")
         for (int i = 0; i < tempParamArray.size(); ++i) {
           param[index++] = std::stoi(tempParamArray[i]);
         }
-      } else if (paramType == "f") {
+      else if (paramType == "f")
         for (int i = 0; i < tempParamArray.size(); ++i) {
           param[index++] = std::stof(tempParamArray[i]);
         }
-      } else if (paramType == "d") {
+      else if (paramType == "d")
         for (int i = 0; i < tempParamArray.size(); ++i) {
           param[index++] = std::stod(tempParamArray[i]);
         }
-      }
 
       while (index <= size - 1) {
         param[index] = defaultVal[index];
@@ -197,29 +192,22 @@ public:
     const char *path = (char *)iniFile.path.c_str();
 
     SI_Error rc = ini.LoadFile(path);
-    if (rc < 0) {
+    if (rc < 0)
       return false;
-    }
 
     std::string toValue = fromValue;
-
     const char *toValueC = (char *)toValue.c_str();
 
     rc = ini.SetValue(section, key, toValueC);
-    if (rc < 0) {
+    if (rc < 0)
       return false;
-    }
 
     std::string output;
     ini.Save(output);
-    if (rc < 0) {
-      return false;
-    }
 
     rc = ini.SaveFile(path);
-    if (rc < 0) {
+    if (rc < 0)
       return false;
-    }
 
     return true;
   };
@@ -233,45 +221,38 @@ public:
     const char *path = (char *)iniFile.path.c_str();
 
     SI_Error rc = ini.LoadFile(path);
-    if (rc < 0) {
+    if (rc < 0)
       return false;
-    }
 
     const char *name = typeid(T).name();
     std::string valueType = name;
     std::string toValue;
 
-    if (valueType == "i") {
+    if (valueType == "i")
       toValue = std::to_string(fromValue);
-    } else if (valueType == "f") {
+    else if (valueType == "f")
       toValue = std::to_string(fromValue);
-    } else if (valueType == "d") {
+    else if (valueType == "d")
       toValue = std::to_string(fromValue);
-    } else if (valueType == "b") {
+    else if (valueType == "b")
       if (fromValue == false) {
         toValue = "false";
       } else if (fromValue == true) {
         toValue = "true";
       }
-    }
 
     const char *toValueC = (char *)toValue.c_str();
 
     rc = ini.SetValue(section, key, toValueC);
-    if (rc < 0) {
+    if (rc < 0)
       return false;
-    }
 
     std::string output;
     ini.Save(output);
-    if (rc < 0) {
-      return false;
-    }
 
     rc = ini.SaveFile(path);
-    if (rc < 0) {
+    if (rc < 0)
       return false;
-    }
 
     return true;
   };
@@ -279,9 +260,8 @@ public:
   template <typename T>
   bool setToIni(const IniFile &iniFile, const char *section, const char *key,
                 T *fromValueArr, const int &size) {
-    if (size <= 0) {
+    if (size <= 0)
       return false;
-    }
 
     CSimpleIniA ini;
     ini.SetUnicode();
@@ -289,54 +269,47 @@ public:
     const char *path = (char *)iniFile.path.c_str();
 
     SI_Error rc = ini.LoadFile(path);
-    if (rc < 0) {
+    if (rc < 0)
       return false;
-    }
 
     const char *name = typeid(T).name();
     std::string valueType = name;
     std::string toValueArr;
 
-    if (valueType == "i") {
+    if (valueType == "i")
       for (int i = 0; i < size; ++i) {
         toValueArr += std::to_string(fromValueArr[i]);
         if (i != size - 1) {
           toValueArr += ", ";
         }
       }
-    } else if (valueType == "f") {
+    else if (valueType == "f")
       for (int i = 0; i < size; ++i) {
         toValueArr += std::to_string(fromValueArr[i]);
         if (i != size - 1) {
           toValueArr += ", ";
         }
       }
-    } else if (valueType == "d") {
+    else if (valueType == "d")
       for (int i = 0; i < size; ++i) {
         toValueArr += std::to_string(fromValueArr[i]);
         if (i != size - 1) {
           toValueArr += ", ";
         }
       }
-    }
 
     const char *toValueC = (char *)toValueArr.c_str();
 
     rc = ini.SetValue(section, key, toValueC);
-    if (rc < 0) {
+    if (rc < 0)
       return false;
-    }
 
     std::string output;
     ini.Save(output);
-    if (rc < 0) {
-      return false;
-    }
 
     rc = ini.SaveFile(path);
-    if (rc < 0) {
+    if (rc < 0)
       return false;
-    }
 
     return true;
   };
@@ -375,9 +348,8 @@ public:
     Json::Value temp = jsonFile.data;
     std::vector<std::string> keyArr = split(key, ".");
 
-    for (int i = 0; i < keyArr.size() - 1; ++i) {
+    for (int i = 0; i < keyArr.size() - 1; ++i)
       temp = temp[keyArr[i]];
-    }
 
     param = temp.get(keyArr[keyArr.size() - 1], defaultVal).asString();
   }
@@ -390,17 +362,15 @@ public:
     const char *name = typeid(T).name();
     std::string valueType = name;
 
-    for (int i = 0; i < keyArr.size() - 1; ++i) {
+    for (int i = 0; i < keyArr.size() - 1; ++i)
       temp = temp[keyArr[i]];
-    }
 
-    if (valueType == "i") {
+    if (valueType == "i")
       param = temp.get(keyArr[keyArr.size() - 1], defaultVal).asInt();
-    } else if (valueType == "d") {
+    else if (valueType == "d")
       param = temp.get(keyArr[keyArr.size() - 1], defaultVal).asDouble();
-    } else if (valueType == "b") {
+    else if (valueType == "b")
       param = temp.get(keyArr[keyArr.size() - 1], defaultVal).asBool();
-    }
   }
 
   void getFromJsonData(const JsonFile &jsonFile, const std::string &key,
@@ -409,9 +379,8 @@ public:
     Json::Value temp = jsonFile.data;
     std::vector<std::string> keyArr = split(key, ".");
 
-    for (int i = 0; i < keyArr.size() - 1; ++i) {
+    for (int i = 0; i < keyArr.size() - 1; ++i)
       temp = temp[keyArr[i]];
-    }
 
     const Json::Value thisKeyArrData = temp[keyArr[keyArr.size() - 1]];
     int index = 0;
@@ -433,20 +402,18 @@ public:
     const char *name = typeid(T).name();
     std::string valueType = name;
 
-    for (int i = 0; i < keyArr.size() - 1; ++i) {
+    for (int i = 0; i < keyArr.size() - 1; ++i)
       temp = temp[keyArr[i]];
-    }
 
     const Json::Value thisKeyArrData = temp[keyArr[keyArr.size() - 1]];
     int index = 0;
 
-    if (valueType == "i") {
+    if (valueType == "i")
       for (int i = 0; i < thisKeyArrData.size(); ++i)
         param[index++] = thisKeyArrData[index].asInt();
-    } else if (valueType == "d") {
+    else if (valueType == "d")
       for (int i = 0; i < thisKeyArrData.size(); ++i)
         param[index++] = thisKeyArrData[index].asDouble();
-    }
 
     if (index < size) {
       for (int i = index; i < size; ++i)
