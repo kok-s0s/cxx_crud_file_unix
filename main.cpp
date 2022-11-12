@@ -244,11 +244,46 @@ TEST(jsonFile_Test, getFromJsonData) {
   JsonFile json_test_01;
   json_test_01.path =
       fileTools.get_current_directory() + "/files_test/json_test_01.json";
-  std::string json_key_01 = "encoding";
-  std::string json_value_01;
+  std::string json_value_string;
+  int json_value_int;
+  double json_value_double;
+  bool json_value_bool;
+  int depth_json_value_int;
+  bool depth_json_value_bool;
 
   EXPECT_EQ(fileTools.readDataFromJsonFile(json_test_01), true);
-  fileTools.getFromJsonData(json_test_01, json_key_01, json_value_01, "kkkkk");
+  fileTools.getFromJsonData(json_test_01, "encoding", json_value_string,
+                            "kkkkk");
+  fileTools.getFromJsonData(json_test_01, "int", json_value_int, 19);
+  fileTools.getFromJsonData(json_test_01, "double", json_value_double, 19.22);
+  fileTools.getFromJsonData(json_test_01, "bool", json_value_bool, true);
+  fileTools.getFromJsonData(json_test_01, "indent.length", depth_json_value_int,
+                            19);
+  fileTools.getFromJsonData(json_test_01, "indent.use_space",
+                            depth_json_value_bool, false);
 
-  EXPECT_EQ(json_value_01, "UTF-8");
+  EXPECT_EQ(json_value_string, "UTF-8");
+  EXPECT_EQ(json_value_int, 22);
+  EXPECT_EQ(json_value_double, 22.22);
+  EXPECT_EQ(json_value_bool, false);
+  EXPECT_EQ(depth_json_value_int, 3);
+  EXPECT_EQ(depth_json_value_bool, true);
+}
+
+TEST(jsonFile_Test, getArrFromJsonData) {
+  JsonFile json_test_01;
+  json_test_01.path =
+      fileTools.get_current_directory() + "/files_test/json_test_01.json";
+  std::string json_value[3];
+  std::string json_target_value[] = {"python", "c++", "ruby"};
+  std::string json_default_value[] = {"java", "c#", "php"};
+  int size = 3;
+
+  EXPECT_EQ(fileTools.readDataFromJsonFile(json_test_01), true);
+  fileTools.getFromJsonData(json_test_01, "plug-ins", json_value,
+                            json_default_value, size);
+
+  for (int i = 0; i < size; ++i) {
+    EXPECT_EQ(json_value[i], json_target_value[i]);
+  }
 }

@@ -1,5 +1,8 @@
 {
   "encoding": "UTF-8",
+  "int": 22,
+  "double": 22.22,
+  "bool": false,
   "plug-ins": ["python", "c++", "ruby"],
   "indent": { "length": 3, "use_space": true }
 }

@@ -370,8 +370,61 @@ public:
       return false;
   }
 
-  void getFromJsonData(const JsonFile &jsonFile, const std::string &name,
+  void getFromJsonData(const JsonFile &jsonFile, const std::string &key,
                        std::string &param, std::string defaultVal) {
-    param = jsonFile.data.get(name, defaultVal).asString();
+    param = jsonFile.data.get(key, defaultVal).asString();
   }
+
+  template <typename T>
+  void getFromJsonData(const JsonFile &jsonFile, const std::string &key,
+                       T &param, T defaultVal) {
+    Json::Value temp = jsonFile.data;
+    std::vector<std::string> keyArr = split(key, ".");
+    const char *name = typeid(T).name();
+    std::string valueType = name;
+
+    for (int i = 0; i < keyArr.size() - 1; ++i) {
+      temp = temp[keyArr[i]];
+    }
+
+    if (valueType == "i") {
+      param = temp.get(keyArr[keyArr.size() - 1], defaultVal).asInt();
+    } else if (valueType == "d") {
+      param = temp.get(keyArr[keyArr.size() - 1], defaultVal).asDouble();
+    } else if (valueType == "b") {
+      param = temp.get(keyArr[keyArr.size() - 1], defaultVal).asBool();
+    }
+  }
+
+  void getFromJsonData(const JsonFile &jsonFile, const std::string &key,
+                       std::string *param, std::string *defaultVal,
+                       const int &size) {
+    const Json::Value thisKeyArrData = jsonFile.data[key];
+    int index = 0;
+
+    for (int i = 0; i < thisKeyArrData.size(); ++i)
+      param[index++] = thisKeyArrData[index].asString();
+
+    if (index < size) {
+      for (int i = index; i < size; ++i)
+        param[i] = defaultVal[i];
+    }
+  }
+
+  // template <typename T>
+  // void getFromJsonData(const JsonFile &jsonFile, const std::string &key,
+  //                      T *param, T *defaultVal, const int &size) {
+  //   const char *name = typeid(T).name();
+  //   std::string valueType = name;
+
+  //   if (valueType == "i") {
+  //     for (int i = 0; i < size; ++i) {
+  //       param[i] = jsonFile.data.get(key, defaultVal[i]).asInt();
+  //     }
+  //   } else if (valueType == "d") {
+  //     for (int i = 0; i < size; ++i) {
+  //       param[i] = jsonFile.data.get(key, defaultVal[i]).asDouble();
+  //     }
+  //   }
+  // }
 };
