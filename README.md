@@ -7,7 +7,7 @@
 - `GCC 9.4.0 x86_64-linux-gnu`
 - `GCC 11.2.0 aarch64-apple-darwin21`
 
-VSCode extensions:
+**VSCode extensions**
 
 - `C/C++`
 - `CMake`
