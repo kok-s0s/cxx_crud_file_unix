@@ -53,6 +53,8 @@ public:
     return current_working_directory;
   }
 
+#pragma region txt
+
   bool readTxtFileLine(TxtFile &txtFile) {
     std::string ln;
     std::fstream file;
@@ -85,6 +87,10 @@ public:
     } else
       return false;
   };
+
+#pragma endregion
+
+#pragma region ini
 
   bool getFromIni(const IniFile &iniFile, const char *section, const char *key,
                   std::string &param, const char *defaultVal) {
@@ -314,6 +320,10 @@ public:
     return true;
   };
 
+#pragma endregion
+
+#pragma region json
+
   bool readDataFromJsonFile(JsonFile &jsonFile) {
     std::fstream file;
 
@@ -420,4 +430,6 @@ public:
         param[i] = defaultVal[i];
     }
   }
+
+#pragma endregion
 };

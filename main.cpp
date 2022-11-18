@@ -1,6 +1,10 @@
-#include "pch.h"
+#include "FileTools.h"
+#include <gtest/gtest.h>
+#include <iostream>
 
 FileTools fileTools;
+
+#pragma region txtTest
 
 TEST(txtFile_Test, readTxtFileLine) {
   TxtFile txt_test_01;
@@ -20,6 +24,10 @@ TEST(txtFile_Test, writeDataToTxtFile) {
   EXPECT_EQ(fileTools.writeDataToTxtFile(txt_test_02, data), true);
   EXPECT_EQ(txt_test_02.data, "hei\nare you ok?\n");
 }
+
+#pragma endregion
+
+#pragma region iniTest
 
 TEST(iniFile_Test, getStringFromIni) {
   IniFile ini_test_01;
@@ -232,6 +240,10 @@ TEST(iniFile_Test, setArrayToIni) {
             true);
 }
 
+#pragma endregion
+
+#pragma region jsonTest
+
 TEST(jsonFile_Test, readDataFromJsonFile) {
   JsonFile json_test_01;
   json_test_01.path =
@@ -327,3 +339,5 @@ TEST(jsonFile_Test, getDoubleArrFromJsonData) {
     EXPECT_EQ(json_value[i], json_target_value[i]);
   }
 }
+
+#pragma endregion
