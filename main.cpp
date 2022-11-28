@@ -341,3 +341,28 @@ TEST(jsonFile_Test, getDoubleArrFromJsonData) {
 }
 
 #pragma endregion
+
+#pragma region dat
+
+TEST(datFile_Test, readDatFile) {
+  DatFile dat_test;
+  dat_test.path =
+      fileTools.get_current_directory() + "/files_test/dat_test.dat";
+
+  EXPECT_EQ(fileTools.readDatFile(dat_test), true);
+}
+
+TEST(datFile_Test, writeDataToDatFile) {
+  DatFile dat_test;
+  dat_test.path =
+      fileTools.get_current_directory() + "/files_test/dat_test.dat";
+
+  if (fileTools.readDatFile(dat_test)) {
+    DatFile dat_test_copy = dat_test;
+    dat_test_copy.path =
+        fileTools.get_current_directory() + "/files_test/dat_test_copy.dat";
+    EXPECT_EQ(fileTools.writeDataToDatFile(dat_test_copy), true);
+  }
+}
+
+#pragma endregion

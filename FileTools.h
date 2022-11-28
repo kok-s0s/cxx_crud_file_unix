@@ -1,6 +1,7 @@
 #include "ini/SimpleIni.h"
 #include "json/json.h"
 #include <fstream>
+// #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -19,6 +20,12 @@ struct IniFile {
 struct JsonFile {
   std::string path;
   Json::Value data;
+};
+
+struct DatFile {
+  std::string path;
+  std::vector<char> data;
+  int dataSize;
 };
 
 class FileTools {
@@ -48,7 +55,7 @@ private:
 public:
   std::string get_current_directory() {
     char buff[250];
-    getcwd(buff, 250);
+    char *temp = getcwd(buff, 250);
     std::string current_working_directory(buff);
     return current_working_directory;
   }
@@ -430,6 +437,62 @@ public:
         param[i] = defaultVal[i];
     }
   }
+
+#pragma endregion
+
+#pragma region dat
+
+  bool readDatFile(DatFile &datFile) {
+    FILE *fid = fopen(datFile.path.c_str(), "rb");
+
+    if (fid == NULL) {
+      return false;
+    }
+
+    fseek(fid, 0, SEEK_END);
+    long lSize = ftell(fid);
+    rewind(fid);
+
+    int num = lSize / sizeof(char);
+    char *pos = (char *)malloc(sizeof(char) * num);
+
+    if (pos == NULL) {
+      return false;
+    }
+
+    size_t temp = fread(pos, sizeof(char), num, fid);
+    for (int i = 0; i < num; ++i) {
+      /*
+      std::cout << std::setfill(' ') << std::setw(8) << std::setbase(16)
+                << (int)pos[i] << " ";
+      if (i % 16 == 0 && i != 0) {
+        std::cout << std::endl;
+      }
+      */
+      datFile.data.push_back(pos[i]);
+    }
+
+    free(pos);
+    fclose(fid);
+
+    return true;
+  };
+
+  bool writeDataToDatFile(const DatFile &datFile) {
+    FILE *fid = fopen(datFile.path.c_str(), "wb");
+
+    if (fid == NULL) {
+      return false;
+    }
+
+    for (int i = 0; i < datFile.data.size(); ++i) {
+      fwrite(&datFile.data[i], sizeof(char), 1, fid);
+    }
+
+    fclose(fid);
+
+    return true;
+  };
 
 #pragma endregion
 };
