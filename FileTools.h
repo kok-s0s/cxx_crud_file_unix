@@ -1,7 +1,6 @@
 #include "ini/SimpleIni.h"
 #include "json/json.h"
 #include <fstream>
-// #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -25,7 +24,6 @@ struct JsonFile {
 struct DatFile {
   std::string path;
   std::vector<char> data;
-  int dataSize;
 };
 
 class FileTools {
@@ -462,17 +460,32 @@ public:
 
     size_t temp = fread(pos, sizeof(char), num, fid);
     for (int i = 0; i < num; ++i) {
-      /*
-      std::cout << std::setfill(' ') << std::setw(8) << std::setbase(16)
-                << (int)pos[i] << " ";
-      if (i % 16 == 0 && i != 0) {
-        std::cout << std::endl;
-      }
-      */
       datFile.data.push_back(pos[i]);
     }
 
     free(pos);
+    fclose(fid);
+
+    return true;
+  };
+
+  bool readDatFile(DatFile &datFile, char *varibale, const int &num) {
+    FILE *fid = fopen(datFile.path.c_str(), "rb");
+
+    if (fid == NULL) {
+      return false;
+    }
+
+    fseek(fid, 0, SEEK_END);
+    long lSize = ftell(fid);
+    rewind(fid);
+
+    if (lSize / sizeof(char) != num) {
+      return false;
+    }
+
+    size_t temp = fread(varibale, sizeof(char), num, fid);
+
     fclose(fid);
 
     return true;

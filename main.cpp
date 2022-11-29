@@ -352,6 +352,20 @@ TEST(datFile_Test, readDatFile) {
   EXPECT_EQ(fileTools.readDatFile(dat_test), true);
 }
 
+TEST(datFile_Test, readDatFileToPtr) {
+  DatFile dat_test;
+  dat_test.path =
+      fileTools.get_current_directory() + "/files_test/dat_test.dat";
+
+  long dataSize = 8192;
+  int num = dataSize / sizeof(char);
+  char *variable = (char *)malloc(sizeof(char) * num);
+
+  if (fileTools.readDatFile(dat_test, variable, num)) {
+    EXPECT_EQ((int)variable[0], -87);
+  }
+}
+
 TEST(datFile_Test, writeDataToDatFile) {
   DatFile dat_test;
   dat_test.path =
