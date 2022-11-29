@@ -92,3 +92,18 @@ template <typename T>
 void getFromJsonData(const JsonFile &jsonFile, const std::string &key,
                        T *param, T *defaultVal, const int &size);
 ```
+
+### dat
+
+```cxx
+struct DatFile {
+  std::string path;
+  std::vector<char> data;
+};
+
+bool readDatFile(DatFile &datFile);
+
+bool readDatFile(DatFile &datFile, char *varibale, const int &num);
+
+bool writeDataToDatFile(const DatFile &datFile);
+```
