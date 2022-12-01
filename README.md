@@ -13,6 +13,7 @@
 - `CMake`
 - `CMake Tools`
 - `clang-format`
+- `Hex Editor`
 
 ## Test-Driven Development (TDD)
 
