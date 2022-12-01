@@ -1,10 +1,17 @@
+#if defined(_MSC_VER)
+#include <direct.h>
+#define GetCurrentDir _getcwd
+#elif defined(__GNUC__)
+#include <unistd.h>
+#define GetCurrentDir getcwd
+#endif
+
 #include "ini/SimpleIni.h"
 #include "json/json.h"
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <unistd.h>
 #include <vector>
 
 struct TxtFile {
@@ -31,9 +38,25 @@ private:
   std::vector<std::string> split(const std::string &data,
                                  const std::string &separator) {
     std::vector<std::string> result;
-    if (data == "")
+    if (data == "") {
       return result;
+    }
 
+#if defined(_MSC_VER)
+    char *thisStr = new char[data.length() + 1];
+    strcpy_s(thisStr, data.length() + 1, data.c_str());
+
+    char *thisSeparator = new char[separator.length() + 1];
+    strcpy_s(thisSeparator, separator.length() + 1, separator.c_str());
+
+    char *next_token = NULL;
+    char *token = strtok_s(thisStr, thisSeparator, &next_token);
+    while (token) {
+      std::string tempStr = token;
+      result.push_back(tempStr);
+      token = strtok_s(NULL, thisSeparator, &next_token);
+    }
+#elif defined(__GNUC__)
     char *thisStr = new char[data.length() + 1];
     strcpy(thisStr, data.c_str());
 
@@ -46,6 +69,7 @@ private:
       result.push_back(tempStr);
       token = strtok(NULL, thisSeparator);
     }
+#endif
 
     return result;
   }
@@ -53,7 +77,7 @@ private:
 public:
   std::string get_current_directory() {
     char buff[250];
-    char *temp = getcwd(buff, 250);
+    char *temp = GetCurrentDir(buff, 250);
     std::string current_working_directory(buff);
     return current_working_directory;
   }
@@ -130,13 +154,13 @@ public:
     std::string tempParam;
     tempParam = ini.GetValue(section, key, std::to_string(defaultVal).c_str());
 
-    if (paramType == "i")
+    if (paramType[0] == 'i')
       param = std::stoi(tempParam);
-    else if (paramType == "f")
+    else if (paramType[0] == 'f')
       param = std::stof(tempParam);
-    else if (paramType == "d")
+    else if (paramType[0] == 'd')
       param = std::stod(tempParam);
-    else if (paramType == "b")
+    else if (paramType[0] == 'b')
       if (tempParam == "false" || tempParam == "0") {
         param = false;
       } else if (tempParam == "true" || tempParam == "1") {
@@ -173,15 +197,15 @@ public:
       std::vector<std::string> tempParamArray =
           split(tempParamArrayStr, " ,\t\n");
 
-      if (paramType == "i")
+      if (paramType[0] == 'i')
         for (int i = 0; i < tempParamArray.size(); ++i) {
           param[index++] = std::stoi(tempParamArray[i]);
         }
-      else if (paramType == "f")
+      else if (paramType[0] == 'f')
         for (int i = 0; i < tempParamArray.size(); ++i) {
           param[index++] = std::stof(tempParamArray[i]);
         }
-      else if (paramType == "d")
+      else if (paramType[0] == 'd')
         for (int i = 0; i < tempParamArray.size(); ++i) {
           param[index++] = std::stod(tempParamArray[i]);
         }
@@ -239,13 +263,13 @@ public:
     std::string valueType = name;
     std::string toValue;
 
-    if (valueType == "i")
+    if (valueType[0] == 'i')
       toValue = std::to_string(fromValue);
-    else if (valueType == "f")
+    else if (valueType[0] == 'f')
       toValue = std::to_string(fromValue);
-    else if (valueType == "d")
+    else if (valueType[0] == 'd')
       toValue = std::to_string(fromValue);
-    else if (valueType == "b")
+    else if (valueType[0] == 'b')
       if (fromValue == false) {
         toValue = "false";
       } else if (fromValue == true) {
@@ -287,21 +311,21 @@ public:
     std::string valueType = name;
     std::string toValueArr;
 
-    if (valueType == "i")
+    if (valueType[0] == 'i')
       for (int i = 0; i < size; ++i) {
         toValueArr += std::to_string(fromValueArr[i]);
         if (i != size - 1) {
           toValueArr += ", ";
         }
       }
-    else if (valueType == "f")
+    else if (valueType[0] == 'f')
       for (int i = 0; i < size; ++i) {
         toValueArr += std::to_string(fromValueArr[i]);
         if (i != size - 1) {
           toValueArr += ", ";
         }
       }
-    else if (valueType == "d")
+    else if (valueType[0] == 'd')
       for (int i = 0; i < size; ++i) {
         toValueArr += std::to_string(fromValueArr[i]);
         if (i != size - 1) {
@@ -380,11 +404,11 @@ public:
     for (int i = 0; i < keyArr.size() - 1; ++i)
       temp = temp[keyArr[i]];
 
-    if (valueType == "i")
+    if (valueType[0] == 'i')
       param = temp.get(keyArr[keyArr.size() - 1], defaultVal).asInt();
-    else if (valueType == "d")
+    else if (valueType[0] == 'd')
       param = temp.get(keyArr[keyArr.size() - 1], defaultVal).asDouble();
-    else if (valueType == "b")
+    else if (valueType[0] == 'b')
       param = temp.get(keyArr[keyArr.size() - 1], defaultVal).asBool();
   }
 
@@ -423,10 +447,10 @@ public:
     const Json::Value thisKeyArrData = temp[keyArr[keyArr.size() - 1]];
     int index = 0;
 
-    if (valueType == "i")
+    if (valueType[0] == 'i')
       for (int i = 0; i < thisKeyArrData.size(); ++i)
         param[index++] = thisKeyArrData[index].asInt();
-    else if (valueType == "d")
+    else if (valueType[0] == 'd')
       for (int i = 0; i < thisKeyArrData.size(); ++i)
         param[index++] = thisKeyArrData[index].asDouble();
 
