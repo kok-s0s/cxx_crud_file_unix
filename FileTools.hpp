@@ -103,7 +103,7 @@ public:
       return true;
     } else
       return false;
-  };
+  }
 
   bool writeDataToTxtFile(TxtFile &txtFile, string data) {
     fstream file;
@@ -119,7 +119,7 @@ public:
       return true;
     } else
       return false;
-  };
+  }
 
 #pragma endregion
 
@@ -139,7 +139,7 @@ public:
     param = ini.GetValue(section, key, defaultVal);
 
     return true;
-  };
+  }
 
   template <typename T>
   bool getFromIni(const IniFile &iniFile, const char *section, const char *key,
@@ -172,7 +172,7 @@ public:
       }
 
     return true;
-  };
+  }
 
   template <typename T>
   bool getFromIni(const IniFile &iniFile, const char *section, const char *key,
@@ -220,7 +220,7 @@ public:
     }
 
     return true;
-  };
+  }
 
   bool setToIni(const IniFile &iniFile, const char *section, const char *key,
                 const char *fromValue) {
@@ -248,7 +248,7 @@ public:
       return false;
 
     return true;
-  };
+  }
 
   template <typename T>
   bool setToIni(const IniFile &iniFile, const char *section, const char *key,
@@ -293,7 +293,7 @@ public:
       return false;
 
     return true;
-  };
+  }
 
   template <typename T>
   bool setToIni(const IniFile &iniFile, const char *section, const char *key,
@@ -350,7 +350,7 @@ public:
       return false;
 
     return true;
-  };
+  }
 
 #pragma endregion
 
@@ -472,7 +472,7 @@ public:
     fclose(fid);
 
     return true;
-  };
+  }
 
   bool readDatFile(DatFile &datFile, char *varibale, const int &num) {
     FILE *fid = fopen(datFile.path.c_str(), "rb");
@@ -494,7 +494,7 @@ public:
     fclose(fid);
 
     return true;
-  };
+  }
 
   bool writeDataToDatFile(const DatFile &datFile) {
     FILE *fid = fopen(datFile.path.c_str(), "wb");
@@ -510,7 +510,7 @@ public:
     fclose(fid);
 
     return true;
-  };
+  }
 
 #pragma endregion
 };
