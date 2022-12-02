@@ -7,7 +7,7 @@
 #endif
 
 #include "ini/SimpleIni.h"
-#include "json/json.h"
+#include "json/json.hpp"
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -20,6 +20,8 @@ using std::string;
 using std::to_string;
 using std::vector;
 
+using json = nlohmann::json;
+
 struct TxtFile {
   string path;
   string data = "";
@@ -31,7 +33,7 @@ struct IniFile {
 
 struct JsonFile {
   string path;
-  Json::Value data;
+  json data;
 };
 
 struct DatFile {
@@ -360,20 +362,7 @@ public:
     file.open(jsonFile.path, ios::in);
 
     if (file.is_open()) {
-      Json::CharReaderBuilder ReaderBuilder;
-      ReaderBuilder["emitUTF8"] = true;
-
-      Json::Value root;
-
-      string strerr;
-
-      bool flag = Json::parseFromStream(ReaderBuilder, file, &root, &strerr);
-
-      if (!flag) {
-        return false;
-      }
-
-      jsonFile.data = root;
+      file >> jsonFile.data;
 
       file.close();
 
@@ -384,78 +373,71 @@ public:
 
   void getFromJsonData(const JsonFile &jsonFile, const string &key,
                        string &param, string defaultVal) {
-    Json::Value temp = jsonFile.data;
+    json temp = jsonFile.data;
     vector<string> keyArr = split(key, ".");
 
     for (int i = 0; i < keyArr.size() - 1; ++i)
-      temp = temp[keyArr[i]];
+      temp = temp.at(keyArr[i]);
 
-    param = temp.get(keyArr[keyArr.size() - 1], defaultVal).asString();
+    if (temp.contains(keyArr[keyArr.size() - 1]))
+      param = temp.at(keyArr[keyArr.size() - 1]);
+    else
+      param = defaultVal;
   }
 
   template <typename T>
   void getFromJsonData(const JsonFile &jsonFile, const string &key, T &param,
                        T defaultVal) {
-    Json::Value temp = jsonFile.data;
+    json temp = jsonFile.data;
     vector<string> keyArr = split(key, ".");
-    const char *name = typeid(T).name();
-    string valueType = name;
 
     for (int i = 0; i < keyArr.size() - 1; ++i)
-      temp = temp[keyArr[i]];
+      temp = temp.at(keyArr[i]);
 
-    if (valueType[0] == 'i')
-      param = temp.get(keyArr[keyArr.size() - 1], defaultVal).asInt();
-    else if (valueType[0] == 'd')
-      param = temp.get(keyArr[keyArr.size() - 1], defaultVal).asDouble();
-    else if (valueType[0] == 'b')
-      param = temp.get(keyArr[keyArr.size() - 1], defaultVal).asBool();
+    if (temp.contains(keyArr[keyArr.size() - 1]))
+      param = temp.at(keyArr[keyArr.size() - 1]);
+    else
+      param = defaultVal;
   }
 
   void getFromJsonData(const JsonFile &jsonFile, const string &key,
                        string *param, string *defaultVal, const int &size) {
-    Json::Value temp = jsonFile.data;
+    json temp = jsonFile.data;
     vector<string> keyArr = split(key, ".");
 
     for (int i = 0; i < keyArr.size() - 1; ++i)
-      temp = temp[keyArr[i]];
+      temp = temp.at(keyArr[i]);
 
-    const Json::Value thisKeyArrData = temp[keyArr[keyArr.size() - 1]];
+    const json thisKeyArrValue = temp.at(keyArr[keyArr.size() - 1]);
     int index = 0;
 
-    for (int i = 0; i < thisKeyArrData.size(); ++i)
-      param[index++] = thisKeyArrData[index].asString();
+    for (int i = 0; i < thisKeyArrValue.size(); ++i) {
+      param[index++] = thisKeyArrValue[index];
 
-    if (index < size) {
-      for (int i = index; i < size; ++i)
-        param[i] = defaultVal[i];
+      if (index < size)
+        for (int i = index; i < size; ++i)
+          param[i] = defaultVal[i];
     }
   }
 
   template <typename T>
   void getFromJsonData(const JsonFile &jsonFile, const string &key, T *param,
                        T *defaultVal, const int &size) {
-    Json::Value temp = jsonFile.data;
+    json temp = jsonFile.data;
     vector<string> keyArr = split(key, ".");
-    const char *name = typeid(T).name();
-    string valueType = name;
 
     for (int i = 0; i < keyArr.size() - 1; ++i)
-      temp = temp[keyArr[i]];
+      temp = temp.at(keyArr[i]);
 
-    const Json::Value thisKeyArrData = temp[keyArr[keyArr.size() - 1]];
+    const json thisKeyArrValue = temp.at(keyArr[keyArr.size() - 1]);
     int index = 0;
 
-    if (valueType[0] == 'i')
-      for (int i = 0; i < thisKeyArrData.size(); ++i)
-        param[index++] = thisKeyArrData[index].asInt();
-    else if (valueType[0] == 'd')
-      for (int i = 0; i < thisKeyArrData.size(); ++i)
-        param[index++] = thisKeyArrData[index].asDouble();
+    for (int i = 0; i < thisKeyArrValue.size(); ++i) {
+      param[index++] = thisKeyArrValue[index];
 
-    if (index < size) {
-      for (int i = index; i < size; ++i)
-        param[i] = defaultVal[i];
+      if (index < size)
+        for (int i = index; i < size; ++i)
+          param[i] = defaultVal[i];
     }
   }
 
