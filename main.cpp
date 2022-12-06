@@ -246,6 +246,23 @@ TEST(iniFile_Test, getArrayDoubleFromIni) {
   }
 }
 
+TEST(iniFile_Test, getFromIni_False) {
+  IniFile ini_test_03;
+  ini_test_03.path =
+      fileTools.get_current_directory() + "/files_test/no_find.ini";
+
+  EXPECT_EQ(fileTools.iniSetup(ini_test_03), false);
+
+  int int_value_01;
+  int int_value_02;
+
+  fileTools.getFromIni(ini_test_03, "int", "int1", int_value_01, 22);
+  fileTools.getFromIni(ini_test_03, "int", "int2", int_value_02, 22);
+
+  EXPECT_EQ(int_value_01, 22);
+  EXPECT_EQ(int_value_02, 22);
+}
+
 TEST(iniFile_Test, setToIni) {
   IniFile ini_test_02;
   ini_test_02.path =
