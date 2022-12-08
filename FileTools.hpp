@@ -97,7 +97,8 @@ public:
     return temp.append("/");
   }
 
-  template <typename... T> string mergePathArgs(string &arg, T &... args) {
+  template <typename... T>
+  string mergePathArgs(const string &arg, T &... args) {
     string path;
     path = mergePathArgs(arg);
     path += mergePathArgs(args...);
