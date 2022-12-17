@@ -6,6 +6,7 @@
 
 - `GCC 9.4.0 x86_64-linux-gnu`
 - `GCC 11.2.0 aarch64-apple-darwin21`
+- `Clang 14.0.0 arm64-apple-darwin22.1.0`
 
 **VSCode extensions**
 
