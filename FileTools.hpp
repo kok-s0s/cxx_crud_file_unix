@@ -49,6 +49,10 @@ struct DatFile {
   vector<char> data;
 };
 
+struct BmpFile {
+  string path;
+};
+
 class FileTools {
  private:
   vector<string> split(const string &data, const string &separator) {
@@ -446,6 +450,12 @@ class FileTools {
 
     return true;
   }
+
+#pragma endregion
+
+#pragma region bmp
+
+  // TODO obligate
 
 #pragma endregion
 };
