@@ -227,18 +227,18 @@
 #pragma warning(disable : 4127 4503 4702 4786)
 #endif
 
+#include <stdio.h>
+
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
 #include <list>
 #include <map>
-#include <stdio.h>
 #include <string>
-
 
 #ifdef SI_SUPPORT_IOSTREAMS
 #include <iostream>
-#endif // SI_SUPPORT_IOSTREAMS
+#endif  // SI_SUPPORT_IOSTREAMS
 
 #ifdef _DEBUG
 #ifndef assert
@@ -251,24 +251,24 @@
 
 using SI_Error = int;
 
-constexpr int SI_OK = 0;       //!< No error
-constexpr int SI_UPDATED = 1;  //!< An existing value was updated
-constexpr int SI_INSERTED = 2; //!< A new value was inserted
+constexpr int SI_OK = 0;        //!< No error
+constexpr int SI_UPDATED = 1;   //!< An existing value was updated
+constexpr int SI_INSERTED = 2;  //!< A new value was inserted
 
 // note: test for any error with (retval < 0)
-constexpr int SI_FAIL = -1;  //!< Generic failure
-constexpr int SI_NOMEM = -2; //!< Out of memory error
-constexpr int SI_FILE = -3;  //!< File error (see errno for detail error)
+constexpr int SI_FAIL = -1;   //!< Generic failure
+constexpr int SI_NOMEM = -2;  //!< Out of memory error
+constexpr int SI_FILE = -3;   //!< File error (see errno for detail error)
 
 #define SI_UTF8_SIGNATURE "\xEF\xBB\xBF"
 
 #ifdef _WIN32
 #define SI_NEWLINE_A "\r\n"
 #define SI_NEWLINE_W L"\r\n"
-#else // !_WIN32
+#else  // !_WIN32
 #define SI_NEWLINE_A "\n"
 #define SI_NEWLINE_W L"\n"
-#endif // _WIN32
+#endif  // _WIN32
 
 #if defined(SI_CONVERT_ICU)
 #include <unicode/ustring.h>
@@ -307,7 +307,7 @@ constexpr int SI_FILE = -3;  //!< File error (see errno for detail error)
  */
 template <class SI_CHAR, class SI_STRLESS, class SI_CONVERTER>
 class CSimpleIniTempl {
-public:
+ public:
   typedef SI_CHAR SI_CHAR_T;
 
   /** key entry */
@@ -370,40 +370,40 @@ public:
       in order to output the INI file data.
   */
   class OutputWriter {
-  public:
+   public:
     OutputWriter() {}
     virtual ~OutputWriter() {}
     virtual void Write(const char *a_pBuf) = 0;
 
-  private:
-    OutputWriter(const OutputWriter &);            // disable
-    OutputWriter &operator=(const OutputWriter &); // disable
+   private:
+    OutputWriter(const OutputWriter &);             // disable
+    OutputWriter &operator=(const OutputWriter &);  // disable
   };
 
   /** OutputWriter class to write the INI data to a file */
   class FileWriter : public OutputWriter {
     FILE *m_file;
 
-  public:
+   public:
     FileWriter(FILE *a_file) : m_file(a_file) {}
     void Write(const char *a_pBuf) { fputs(a_pBuf, m_file); }
 
-  private:
-    FileWriter(const FileWriter &);            // disable
-    FileWriter &operator=(const FileWriter &); // disable
+   private:
+    FileWriter(const FileWriter &);             // disable
+    FileWriter &operator=(const FileWriter &);  // disable
   };
 
   /** OutputWriter class to write the INI data to a string */
   class StringWriter : public OutputWriter {
     std::string &m_string;
 
-  public:
+   public:
     StringWriter(std::string &a_string) : m_string(a_string) {}
     void Write(const char *a_pBuf) { m_string.append(a_pBuf); }
 
-  private:
-    StringWriter(const StringWriter &);            // disable
-    StringWriter &operator=(const StringWriter &); // disable
+   private:
+    StringWriter(const StringWriter &);             // disable
+    StringWriter &operator=(const StringWriter &);  // disable
   };
 
 #ifdef SI_SUPPORT_IOSTREAMS
@@ -411,21 +411,21 @@ public:
   class StreamWriter : public OutputWriter {
     std::ostream &m_ostream;
 
-  public:
+   public:
     StreamWriter(std::ostream &a_ostream) : m_ostream(a_ostream) {}
     void Write(const char *a_pBuf) { m_ostream << a_pBuf; }
 
-  private:
-    StreamWriter(const StreamWriter &);            // disable
-    StreamWriter &operator=(const StreamWriter &); // disable
+   private:
+    StreamWriter(const StreamWriter &);             // disable
+    StreamWriter &operator=(const StreamWriter &);  // disable
   };
-#endif // SI_SUPPORT_IOSTREAMS
+#endif  // SI_SUPPORT_IOSTREAMS
 
   /** Characterset conversion utility class to convert strings to the
       same format as is used for the storage.
   */
   class Converter : private SI_CONVERTER {
-  public:
+   public:
     Converter(bool a_bStoreIsUtf8) : SI_CONVERTER(a_bStoreIsUtf8) {
       m_scratch.resize(1024);
     }
@@ -447,11 +447,11 @@ public:
     }
     const char *Data() { return m_scratch.data(); }
 
-  private:
+   private:
     std::string m_scratch;
   };
 
-public:
+ public:
   /*-----------------------------------------------------------------------*/
 
   /** Default constructor.
@@ -490,8 +490,7 @@ public:
       \param a_bIsUtf8     Assume UTF-8 encoding for the source?
    */
   void SetUnicode(bool a_bIsUtf8 = true) {
-    if (!m_pData)
-      m_bStoreIsUtf8 = a_bIsUtf8;
+    if (!m_pData) m_bStoreIsUtf8 = a_bIsUtf8;
   }
 
   /** Get the storage format of the INI data. */
@@ -596,7 +595,7 @@ public:
       @return SI_Error    See error definitions
    */
   SI_Error LoadFile(const SI_WCHAR_T *a_pwszFile);
-#endif // SI_HAS_WIDE_FILE
+#endif  // SI_HAS_WIDE_FILE
 
   /** Load the file from a file pointer.
 
@@ -615,7 +614,7 @@ public:
       @return SI_Error    See error definitions
    */
   SI_Error LoadData(std::istream &a_istream);
-#endif // SI_SUPPORT_IOSTREAMS
+#endif  // SI_SUPPORT_IOSTREAMS
 
   /** Load INI file data direct from a std::string
 
@@ -667,7 +666,7 @@ public:
    */
   SI_Error SaveFile(const SI_WCHAR_T *a_pwszFile,
                     bool a_bAddSignature = true) const;
-#endif // _WIN32
+#endif  // _WIN32
 
   /** Save the INI data to a file. See Save() for details.
 
@@ -732,7 +731,7 @@ public:
     StreamWriter writer(a_ostream);
     return Save(writer, a_bAddSignature);
   }
-#endif // SI_SUPPORT_IOSTREAMS
+#endif  // SI_SUPPORT_IOSTREAMS
 
   /** Append the INI data to a string. See Save() for details.
 
@@ -1089,10 +1088,10 @@ public:
   /*-----------------------------------------------------------------------*/
   /** @} */
 
-private:
+ private:
   // copying is not permitted
-  CSimpleIniTempl(const CSimpleIniTempl &);            // disabled
-  CSimpleIniTempl &operator=(const CSimpleIniTempl &); // disabled
+  CSimpleIniTempl(const CSimpleIniTempl &);             // disabled
+  CSimpleIniTempl &operator=(const CSimpleIniTempl &);  // disabled
 
   /** Parse the data looking for a file comment and store it if found.
    */
@@ -1168,7 +1167,7 @@ private:
   bool OutputMultiLineText(OutputWriter &a_oOutput, Converter &a_oConverter,
                            const SI_CHAR *a_pText) const;
 
-private:
+ private:
   /** Copy of the INI file data in our character format. This will be
       modified when parsed to have NULL characters added after all
       interesting string entries. All of the string pointers to sections,
@@ -1228,10 +1227,17 @@ private:
 template <class SI_CHAR, class SI_STRLESS, class SI_CONVERTER>
 CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::CSimpleIniTempl(
     bool a_bIsUtf8, bool a_bAllowMultiKey, bool a_bAllowMultiLine)
-    : m_pData(0), m_uDataLen(0), m_pFileComment(NULL), m_cEmptyString(0),
-      m_bStoreIsUtf8(a_bIsUtf8), m_bAllowMultiKey(a_bAllowMultiKey),
-      m_bAllowMultiLine(a_bAllowMultiLine), m_bSpaces(true),
-      m_bParseQuotes(false), m_bAllowKeyOnly(false), m_nOrder(0) {}
+    : m_pData(0),
+      m_uDataLen(0),
+      m_pFileComment(NULL),
+      m_cEmptyString(0),
+      m_bStoreIsUtf8(a_bIsUtf8),
+      m_bAllowMultiKey(a_bAllowMultiKey),
+      m_bAllowMultiLine(a_bAllowMultiLine),
+      m_bSpaces(true),
+      m_bParseQuotes(false),
+      m_bAllowKeyOnly(false),
+      m_nOrder(0) {}
 
 template <class SI_CHAR, class SI_STRLESS, class SI_CONVERTER>
 CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::~CSimpleIniTempl() {
@@ -1265,9 +1271,9 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::LoadFile(
   FILE *fp = NULL;
 #if __STDC_WANT_SECURE_LIB__ && !_WIN32_WCE
   fopen_s(&fp, a_pszFile, "rb");
-#else  // !__STDC_WANT_SECURE_LIB__
+#else   // !__STDC_WANT_SECURE_LIB__
   fp = fopen(a_pszFile, "rb");
-#endif // __STDC_WANT_SECURE_LIB__
+#endif  // __STDC_WANT_SECURE_LIB__
   if (!fp) {
     return SI_FILE;
   }
@@ -1284,25 +1290,24 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::LoadFile(
   FILE *fp = NULL;
 #if __STDC_WANT_SECURE_LIB__ && !_WIN32_WCE
   _wfopen_s(&fp, a_pwszFile, L"rb");
-#else  // !__STDC_WANT_SECURE_LIB__
+#else   // !__STDC_WANT_SECURE_LIB__
   fp = _wfopen(a_pwszFile, L"rb");
-#endif // __STDC_WANT_SECURE_LIB__
-  if (!fp)
-    return SI_FILE;
+#endif  // __STDC_WANT_SECURE_LIB__
+  if (!fp) return SI_FILE;
   SI_Error rc = LoadFile(fp);
   fclose(fp);
   return rc;
-#else  // !_WIN32 (therefore SI_CONVERT_ICU)
+#else   // !_WIN32 (therefore SI_CONVERT_ICU)
   char szFile[256];
   u_austrncpy(szFile, a_pwszFile, sizeof(szFile));
   return LoadFile(szFile);
-#endif // _WIN32
+#endif  // _WIN32
 }
-#endif // SI_HAS_WIDE_FILE
+#endif  // SI_HAS_WIDE_FILE
 
 template <class SI_CHAR, class SI_STRLESS, class SI_CONVERTER>
-SI_Error
-CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::LoadFile(FILE *a_fpFile) {
+SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::LoadFile(
+    FILE *a_fpFile) {
   // load the raw file data
   int retval = fseek(a_fpFile, 0, SEEK_END);
   if (retval != 0) {
@@ -1350,7 +1355,7 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::LoadData(
   if (a_uDataLen >= 3 && memcmp(a_pData, SI_UTF8_SIGNATURE, 3) == 0) {
     a_pData += 3;
     a_uDataLen -= 3;
-    SI_ASSERT(m_bStoreIsUtf8 || !m_pData); // we don't expect mixed mode data
+    SI_ASSERT(m_bStoreIsUtf8 || !m_pData);  // we don't expect mixed mode data
     SetUnicode();
   }
 
@@ -1394,14 +1399,12 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::LoadData(
   // find a file comment if it exists, this is a comment that starts at the
   // beginning of the file and continues until the first blank line.
   SI_Error rc = FindFileComment(pWork, bCopyStrings);
-  if (rc < 0)
-    return rc;
+  if (rc < 0) return rc;
 
   // add every entry in the file to the data table
   while (FindEntry(pWork, pSection, pItem, pVal, pComment)) {
     rc = AddEntry(pSection, pItem, pVal, pComment, false, bCopyStrings);
-    if (rc < 0)
-      return rc;
+    if (rc < 0) return rc;
   }
 
   // store these strings if we didn't copy them
@@ -1427,7 +1430,7 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::LoadData(
   } while (a_istream.good());
   return LoadData(strData);
 }
-#endif // SI_SUPPORT_IOSTREAMS
+#endif  // SI_SUPPORT_IOSTREAMS
 
 template <class SI_CHAR, class SI_STRLESS, class SI_CONVERTER>
 SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::FindFileComment(
@@ -1446,8 +1449,7 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::FindFileComment(
   // copy the string if necessary
   if (a_bCopyStrings) {
     SI_Error rc = CopyString(m_pFileComment);
-    if (rc < 0)
-      return rc;
+    if (rc < 0) return rc;
   }
 
   return SI_OK;
@@ -1506,7 +1508,7 @@ bool CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::FindEntry(
       *pTrail = 0;
 
       // skip to the end of the line
-      ++a_pData; // safe as checked that it == ']' above
+      ++a_pData;  // safe as checked that it == ']' above
       while (*a_pData && !IsNewLineChar(*a_pData)) {
         ++a_pData;
       }
@@ -1549,7 +1551,7 @@ bool CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::FindEntry(
       *pTrail = 0;
 
       // skip leading whitespace on the value
-      ++a_pData; // safe as checked that it == '=' above
+      ++a_pData;  // safe as checked that it == '=' above
       while (*a_pData && !IsNewLineChar(*a_pData) && IsSpace(*a_pData)) {
         ++a_pData;
       }
@@ -1562,7 +1564,7 @@ bool CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::FindEntry(
 
       // remove trailing spaces from the value
       pTrail = a_pData - 1;
-      if (*a_pData) { // prepare for the next round
+      if (*a_pData) {  // prepare for the next round
         SkipNewLine(a_pData);
       }
       while (pTrail >= a_pVal && IsSpace(*pTrail)) {
@@ -1606,12 +1608,9 @@ template <class SI_CHAR, class SI_STRLESS, class SI_CONVERTER>
 bool CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::IsMultiLineTag(
     const SI_CHAR *a_pVal) const {
   // check for the "<<<" prefix for a multi-line entry
-  if (*a_pVal++ != '<')
-    return false;
-  if (*a_pVal++ != '<')
-    return false;
-  if (*a_pVal++ != '<')
-    return false;
+  if (*a_pVal++ != '<') return false;
+  if (*a_pVal++ != '<') return false;
+  if (*a_pVal++ != '<') return false;
   return true;
 }
 
@@ -1735,8 +1734,7 @@ bool CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::LoadMultiLineText(
       // we have a comment, add the blank lines to the output
       // and continue processing from here
       if (IsComment(*pCurr)) {
-        for (; nNewLines > 0; --nNewLines)
-          *pDataLine++ = '\n';
+        for (; nNewLines > 0; --nNewLines) *pDataLine++ = '\n';
         a_pData = pCurr;
         continue;
       }
@@ -1747,8 +1745,7 @@ bool CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::LoadMultiLineText(
 
     // find the end of this line
     pCurrLine = a_pData;
-    while (*a_pData && !IsNewLineChar(*a_pData))
-      ++a_pData;
+    while (*a_pData && !IsNewLineChar(*a_pData)) ++a_pData;
 
     // move this line down to the location that it should be if necessary
     if (pDataLine < pCurrLine) {
@@ -1767,8 +1764,7 @@ bool CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::LoadMultiLineText(
     if (a_pTagName) {
       // strip whitespace from the end of this tag
       SI_CHAR *pc = a_pData - 1;
-      while (pc > pDataLine && IsSpace(*pc))
-        --pc;
+      while (pc > pDataLine && IsSpace(*pc)) --pc;
       SI_CHAR ch = *++pc;
       *pc = 0;
 
@@ -1828,7 +1824,7 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::CopyString(
     for (; a_pString[uLen]; ++uLen) /*loop*/
       ;
   }
-  ++uLen; // NULL character
+  ++uLen;  // NULL character
   SI_CHAR *pCopy = new (std::nothrow) SI_CHAR[uLen];
   if (!pCopy) {
     return SI_NOMEM;
@@ -1852,8 +1848,7 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::AddEntry(
   // because we will need it when we add the entry.
   if (a_bCopyStrings && a_pComment) {
     rc = CopyString(a_pComment);
-    if (rc < 0)
-      return rc;
+    if (rc < 0) return rc;
   }
 
   // create the section entry if necessary
@@ -1863,8 +1858,7 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::AddEntry(
     // string needs to last beyond the end of this function
     if (a_bCopyStrings) {
       rc = CopyString(a_pSection);
-      if (rc < 0)
-        return rc;
+      if (rc < 0) return rc;
     }
 
     // only set the comment if this is a section only entry
@@ -1923,14 +1917,12 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::AddEntry(
       // string needs to last beyond the end of this function
       // because we will be inserting the key next
       rc = CopyString(a_pKey);
-      if (rc < 0)
-        return rc;
+      if (rc < 0) return rc;
     }
 
     // we always need a copy of the value
     rc = CopyString(a_pValue);
-    if (rc < 0)
-      return rc;
+    if (rc < 0) return rc;
   }
 
   // create the key entry
@@ -1986,8 +1978,7 @@ long CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::GetLongValue(
     bool *a_pHasMultiple) const {
   // return the default if we don't have a value
   const SI_CHAR *pszValue = GetValue(a_pSection, a_pKey, NULL, a_pHasMultiple);
-  if (!pszValue || !*pszValue)
-    return a_nDefault;
+  if (!pszValue || !*pszValue) return a_nDefault;
 
   // convert to UTF-8/MBCS which for a numeric value will be the same as ASCII
   char szValue[64] = {0};
@@ -2000,8 +1991,7 @@ long CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::GetLongValue(
   long nValue = a_nDefault;
   char *pszSuffix = szValue;
   if (szValue[0] == '0' && (szValue[1] == 'x' || szValue[1] == 'X')) {
-    if (!szValue[2])
-      return a_nDefault;
+    if (!szValue[2]) return a_nDefault;
     nValue = strtol(&szValue[2], &pszSuffix, 16);
   } else {
     nValue = strtol(szValue, &pszSuffix, 10);
@@ -2020,16 +2010,15 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::SetLongValue(
     const SI_CHAR *a_pSection, const SI_CHAR *a_pKey, long a_nValue,
     const SI_CHAR *a_pComment, bool a_bUseHex, bool a_bForceReplace) {
   // use SetValue to create sections
-  if (!a_pSection || !a_pKey)
-    return SI_FAIL;
+  if (!a_pSection || !a_pKey) return SI_FAIL;
 
   // convert to an ASCII string
   char szInput[64];
 #if __STDC_WANT_SECURE_LIB__ && !_WIN32_WCE
   sprintf_s(szInput, a_bUseHex ? "0x%lx" : "%ld", a_nValue);
-#else  // !__STDC_WANT_SECURE_LIB__
+#else   // !__STDC_WANT_SECURE_LIB__
   sprintf(szInput, a_bUseHex ? "0x%lx" : "%ld", a_nValue);
-#endif // __STDC_WANT_SECURE_LIB__
+#endif  // __STDC_WANT_SECURE_LIB__
 
   // convert to output text
   SI_CHAR szOutput[64];
@@ -2048,8 +2037,7 @@ double CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::GetDoubleValue(
     bool *a_pHasMultiple) const {
   // return the default if we don't have a value
   const SI_CHAR *pszValue = GetValue(a_pSection, a_pKey, NULL, a_pHasMultiple);
-  if (!pszValue || !*pszValue)
-    return a_nDefault;
+  if (!pszValue || !*pszValue) return a_nDefault;
 
   // convert to UTF-8/MBCS which for a numeric value will be the same as ASCII
   char szValue[64] = {0};
@@ -2074,16 +2062,15 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::SetDoubleValue(
     const SI_CHAR *a_pSection, const SI_CHAR *a_pKey, double a_nValue,
     const SI_CHAR *a_pComment, bool a_bForceReplace) {
   // use SetValue to create sections
-  if (!a_pSection || !a_pKey)
-    return SI_FAIL;
+  if (!a_pSection || !a_pKey) return SI_FAIL;
 
   // convert to an ASCII string
   char szInput[64];
 #if __STDC_WANT_SECURE_LIB__ && !_WIN32_WCE
   sprintf_s(szInput, "%f", a_nValue);
-#else  // !__STDC_WANT_SECURE_LIB__
+#else   // !__STDC_WANT_SECURE_LIB__
   sprintf(szInput, "%f", a_nValue);
-#endif // __STDC_WANT_SECURE_LIB__
+#endif  // __STDC_WANT_SECURE_LIB__
 
   // convert to output text
   SI_CHAR szOutput[64];
@@ -2102,32 +2089,29 @@ bool CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::GetBoolValue(
     bool *a_pHasMultiple) const {
   // return the default if we don't have a value
   const SI_CHAR *pszValue = GetValue(a_pSection, a_pKey, NULL, a_pHasMultiple);
-  if (!pszValue || !*pszValue)
-    return a_bDefault;
+  if (!pszValue || !*pszValue) return a_bDefault;
 
   // we only look at the minimum number of characters
   switch (pszValue[0]) {
-  case 't':
-  case 'T': // true
-  case 'y':
-  case 'Y': // yes
-  case '1': // 1 (one)
-    return true;
+    case 't':
+    case 'T':  // true
+    case 'y':
+    case 'Y':  // yes
+    case '1':  // 1 (one)
+      return true;
 
-  case 'f':
-  case 'F': // false
-  case 'n':
-  case 'N': // no
-  case '0': // 0 (zero)
-    return false;
+    case 'f':
+    case 'F':  // false
+    case 'n':
+    case 'N':  // no
+    case '0':  // 0 (zero)
+      return false;
 
-  case 'o':
-  case 'O':
-    if (pszValue[1] == 'n' || pszValue[1] == 'N')
-      return true; // on
-    if (pszValue[1] == 'f' || pszValue[1] == 'F')
-      return false; // off
-    break;
+    case 'o':
+    case 'O':
+      if (pszValue[1] == 'n' || pszValue[1] == 'N') return true;   // on
+      if (pszValue[1] == 'f' || pszValue[1] == 'F') return false;  // off
+      break;
   }
 
   // no recognized value, return the default
@@ -2139,8 +2123,7 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::SetBoolValue(
     const SI_CHAR *a_pSection, const SI_CHAR *a_pKey, bool a_bValue,
     const SI_CHAR *a_pComment, bool a_bForceReplace) {
   // use SetValue to create sections
-  if (!a_pSection || !a_pKey)
-    return SI_FAIL;
+  if (!a_pSection || !a_pKey) return SI_FAIL;
 
   // convert to an ASCII string
   const char *pszInput = a_bValue ? "true" : "false";
@@ -2278,11 +2261,10 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::SaveFile(
   FILE *fp = NULL;
 #if __STDC_WANT_SECURE_LIB__ && !_WIN32_WCE
   fopen_s(&fp, a_pszFile, "wb");
-#else  // !__STDC_WANT_SECURE_LIB__
+#else   // !__STDC_WANT_SECURE_LIB__
   fp = fopen(a_pszFile, "wb");
-#endif // __STDC_WANT_SECURE_LIB__
-  if (!fp)
-    return SI_FILE;
+#endif  // __STDC_WANT_SECURE_LIB__
+  if (!fp) return SI_FILE;
   SI_Error rc = SaveFile(fp, a_bAddSignature);
   fclose(fp);
   return rc;
@@ -2296,21 +2278,20 @@ SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::SaveFile(
   FILE *fp = NULL;
 #if __STDC_WANT_SECURE_LIB__ && !_WIN32_WCE
   _wfopen_s(&fp, a_pwszFile, L"wb");
-#else  // !__STDC_WANT_SECURE_LIB__
+#else   // !__STDC_WANT_SECURE_LIB__
   fp = _wfopen(a_pwszFile, L"wb");
-#endif // __STDC_WANT_SECURE_LIB__
-  if (!fp)
-    return SI_FILE;
+#endif  // __STDC_WANT_SECURE_LIB__
+  if (!fp) return SI_FILE;
   SI_Error rc = SaveFile(fp, a_bAddSignature);
   fclose(fp);
   return rc;
-#else  // !_WIN32 (therefore SI_CONVERT_ICU)
+#else   // !_WIN32 (therefore SI_CONVERT_ICU)
   char szFile[256];
   u_austrncpy(szFile, a_pwszFile, sizeof(szFile));
   return SaveFile(szFile, a_bAddSignature);
-#endif // _WIN32
+#endif  // _WIN32
 }
-#endif // SI_HAS_WIDE_FILE
+#endif  // SI_HAS_WIDE_FILE
 
 template <class SI_CHAR, class SI_STRLESS, class SI_CONVERTER>
 SI_Error CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::SaveFile(
@@ -2594,7 +2575,7 @@ void CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::DeleteString(
 //                          ICU headers on include path and icuuc.lib
 //  SI_CONVERT_WIN32        Use the Win32 API functions for conversion.
 
-#if !defined(SI_NO_CONVERSION) && !defined(SI_CONVERT_GENERIC) &&              \
+#if !defined(SI_NO_CONVERSION) && !defined(SI_CONVERT_GENERIC) && \
     !defined(SI_CONVERT_WIN32) && !defined(SI_CONVERT_ICU)
 #ifdef _WIN32
 #define SI_CONVERT_WIN32
@@ -2608,7 +2589,8 @@ void CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::DeleteString(
  * ordered ASCII case-sensitive text for all possible sizes and types of
  * SI_CHAR.
  */
-template <class SI_CHAR> struct SI_GenericCase {
+template <class SI_CHAR>
+struct SI_GenericCase {
   bool operator()(const SI_CHAR *pLeft, const SI_CHAR *pRight) const {
     long cmp;
     for (; *pLeft && *pRight; ++pLeft, ++pRight) {
@@ -2627,7 +2609,8 @@ template <class SI_CHAR> struct SI_GenericCase {
  * and types of SI_CHAR. It is not safe for MBCS text comparison where
  * ASCII A-Z characters are used in the encoding of multi-byte characters.
  */
-template <class SI_CHAR> struct SI_GenericNoCase {
+template <class SI_CHAR>
+struct SI_GenericNoCase {
   inline SI_CHAR locase(SI_CHAR ch) const {
     return (ch < 'A' || ch > 'Z') ? ch : (ch - 'A' + 'a');
   }
@@ -2646,13 +2629,14 @@ template <class SI_CHAR> struct SI_GenericNoCase {
 /**
  * Null conversion class for MBCS/UTF-8 to char (or equivalent).
  */
-template <class SI_CHAR> class SI_ConvertA {
+template <class SI_CHAR>
+class SI_ConvertA {
   bool m_bStoreIsUtf8;
 
-protected:
+ protected:
   SI_ConvertA() {}
 
-public:
+ public:
   SI_ConvertA(bool a_bStoreIsUtf8) : m_bStoreIsUtf8(a_bStoreIsUtf8) {}
 
   /* copy and assignment */
@@ -2756,21 +2740,22 @@ public:
 #define SI_Case SI_GenericCase
 #define SI_NoCase SI_GenericNoCase
 
-#include "ConvertUTF.h"
 #include <wchar.h>
 
+#include "ConvertUTF.h"
 
 /**
  * Converts UTF-8 to a wchar_t (or equivalent) using the Unicode reference
  * library functions. This can be used on all platforms.
  */
-template <class SI_CHAR> class SI_ConvertW {
+template <class SI_CHAR>
+class SI_ConvertW {
   bool m_bStoreIsUtf8;
 
-protected:
+ protected:
   SI_ConvertW() {}
 
-public:
+ public:
   SI_ConvertW(bool a_bStoreIsUtf8) : m_bStoreIsUtf8(a_bStoreIsUtf8) {}
 
   /* copy and assignment */
@@ -2880,7 +2865,7 @@ public:
       if (uLen == (size_t)(-1)) {
         return uLen;
       }
-      return uLen + 1; // include NULL terminator
+      return uLen + 1;  // include NULL terminator
     }
   }
 
@@ -2905,7 +2890,7 @@ public:
       while (a_pInputData[uInputLen]) {
         ++uInputLen;
       }
-      ++uInputLen; // include the NULL char
+      ++uInputLen;  // include the NULL char
 
       // This uses the Unicode reference implementation to do the
       // conversion from wchar_t to UTF-8. The required files are
@@ -2933,7 +2918,7 @@ public:
   }
 };
 
-#endif // SI_CONVERT_GENERIC
+#endif  // SI_CONVERT_GENERIC
 
 // ---------------------------------------------------------------------------
 //                              SI_CONVERT_ICU
@@ -2948,14 +2933,15 @@ public:
 /**
  * Converts MBCS/UTF-8 to UChar using ICU. This can be used on all platforms.
  */
-template <class SI_CHAR> class SI_ConvertW {
+template <class SI_CHAR>
+class SI_ConvertW {
   const char *m_pEncoding;
   UConverter *m_pConverter;
 
-protected:
+ protected:
   SI_ConvertW() : m_pEncoding(NULL), m_pConverter(NULL) {}
 
-public:
+ public:
   SI_ConvertW(bool a_bStoreIsUtf8) : m_pConverter(NULL) {
     m_pEncoding = a_bStoreIsUtf8 ? "UTF-8" : NULL;
   }
@@ -2968,8 +2954,7 @@ public:
     return *this;
   }
   ~SI_ConvertW() {
-    if (m_pConverter)
-      ucnv_close(m_pConverter);
+    if (m_pConverter) ucnv_close(m_pConverter);
   }
 
   /** Calculate the number of UChar required for converting the input
@@ -3110,7 +3095,7 @@ public:
   }
 };
 
-#endif // SI_CONVERT_ICU
+#endif  // SI_CONVERT_ICU
 
 // ---------------------------------------------------------------------------
 //                              SI_CONVERT_WIN32
@@ -3129,7 +3114,7 @@ public:
 #include <windows.h>
 #ifdef SI_NO_MBCS
 #define SI_NoCase SI_GenericNoCase
-#else // !SI_NO_MBCS
+#else  // !SI_NO_MBCS
 /**
  * Case-insensitive comparison class using Win32 MBCS functions. This class
  * returns a case-insensitive semi-collation order for MBCS text. It may not
@@ -3139,7 +3124,8 @@ public:
  * SI_NoCase class instead.
  */
 #include <mbstring.h>
-template <class SI_CHAR> struct SI_NoCase {
+template <class SI_CHAR>
+struct SI_NoCase {
   bool operator()(const SI_CHAR *pLeft, const SI_CHAR *pRight) const {
     if (sizeof(SI_CHAR) == sizeof(char)) {
       return _mbsicmp((const unsigned char *)pLeft,
@@ -3151,7 +3137,7 @@ template <class SI_CHAR> struct SI_NoCase {
     return SI_GenericNoCase<SI_CHAR>()(pLeft, pRight);
   }
 };
-#endif // SI_NO_MBCS
+#endif  // SI_NO_MBCS
 
 /**
  * Converts MBCS and UTF-8 to a wchar_t (or equivalent) on Windows. This uses
@@ -3159,13 +3145,14 @@ template <class SI_CHAR> struct SI_NoCase {
  * conversion library. It will not work on Windows 95 without using Microsoft
  * Layer for Unicode in your application.
  */
-template <class SI_CHAR> class SI_ConvertW {
+template <class SI_CHAR>
+class SI_ConvertW {
   UINT m_uCodePage;
 
-protected:
+ protected:
   SI_ConvertW() {}
 
-public:
+ public:
   SI_ConvertW(bool a_bStoreIsUtf8) {
     m_uCodePage = a_bStoreIsUtf8 ? CP_UTF8 : CP_ACP;
   }
@@ -3257,7 +3244,7 @@ public:
   }
 };
 
-#endif // SI_CONVERT_WIN32
+#endif  // SI_CONVERT_WIN32
 
 // ---------------------------------------------------------------------------
 //                              SI_NO_CONVERSION
@@ -3267,7 +3254,7 @@ public:
 #define SI_Case SI_GenericCase
 #define SI_NoCase SI_GenericNoCase
 
-#endif // SI_NO_CONVERSION
+#endif  // SI_NO_CONVERSION
 
 // ---------------------------------------------------------------------------
 //                                  TYPE DEFINITIONS
@@ -3299,15 +3286,15 @@ typedef CSimpleIniTempl<wchar_t, SI_Case<wchar_t>, SI_ConvertW<wchar_t>>
 #define CSimpleIni CSimpleIniW
 #define CSimpleIniCase CSimpleIniCaseW
 #define SI_NEWLINE SI_NEWLINE_W
-#else // !_UNICODE
+#else  // !_UNICODE
 #define CSimpleIni CSimpleIniA
 #define CSimpleIniCase CSimpleIniCaseA
 #define SI_NEWLINE SI_NEWLINE_A
-#endif // _UNICODE
+#endif  // _UNICODE
 #endif
 
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 
-#endif // INCLUDED_SimpleIni_h
+#endif  // INCLUDED_SimpleIni_h

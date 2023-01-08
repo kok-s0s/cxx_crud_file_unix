@@ -1,6 +1,8 @@
-#include "FileTools.hpp"
 #include <gtest/gtest.h>
+
 #include <iostream>
+
+#include "FileTools.hpp"
 
 FileTools fileTools;
 
